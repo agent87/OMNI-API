@@ -7,6 +7,8 @@ import uvicorn
 import os
 import aiofiles
 
+from utils import stt, pindo, ocr
+
 app = FastAPI(title='OMNI API')
 origins = [
     "http://localhost.tiangolo.com",
@@ -38,18 +40,20 @@ async def postImage(file:UploadFile=File(...)):
     return {'Success':True,'sms':sms, 'file':file.filename}
 
 @app.post('/audio')
-async def postAudio(file:UploadFile=File(...)):
+async def postAudio(phone:str,file:UploadFile=File(...)):
     if not file:
         raise HTTPException(status_code=404, detail='No File Uploaded')
     content = await file.read()
 
     # audio to text functionalities
+    STT = stt.convert
+    speech_converted = STT.to_text(content)
 
     # sms by pindo functionalities
+    sms = speech_converted
+    await pindo.send_sms(phone, sms)
 
-    sms = ''
-
-    return {'Success':True,'sms':sms, 'file':file.filename}
+    return {'Success':True,'sms':sms, 'phone':phone, 'file':file.filename}
 
 if __name__=='__main__':
     port = os.getenv('PORT',default=8000)
