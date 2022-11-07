@@ -4,7 +4,7 @@ import requests
 
 class convert:
     url = "https://kws.mbaza.dev.cndp.org.rw/kinyarwanda/api/v1/stt/http"
-    token  = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5LCJleHAiOjE2NjU4NDU4NDAuMDIwNzg3fQ.FIoVFEK9QNuQl5s3VjmFvtXVW_vmPdJczXOWtY3Tq8Q"
+    token  = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo5LCJleHAiOjE2Njk4ODQ0NDEuNTUxNjA0fQ.Yp90vtm3v_1fY9RWfA8-kxKIwpw8o3T2IBil2QEMvX0"
     
 
     def to_text(audio):
