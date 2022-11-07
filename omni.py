@@ -26,7 +26,7 @@ app.add_middleware(
 )
 
 @app.post('/image')
-async def postImage(file:UploadFile=File(...)):
+async def postImage(phone:str,file:UploadFile=File(...)):
     if not file:
         raise HTTPException(status_code=404, detail='No File Uploaded')
     content = await file.read()
@@ -34,10 +34,10 @@ async def postImage(file:UploadFile=File(...)):
     # image to text functionalities
 
     # sms by pindo functionalities
-
     sms = ''
+    sms_response = pindo.send_sms(phone, sms)
 
-    return {'Success':True,'sms':sms, 'file':file.filename}
+    return {'Success':True,'sms':sms, 'phone':phone, 'file':file.filename}
 
 @app.post('/audio')
 async def postAudio(phone:str,file:UploadFile=File(...)):
@@ -51,9 +51,9 @@ async def postAudio(phone:str,file:UploadFile=File(...)):
 
     # sms by pindo functionalities
     sms = speech_converted
-    await pindo.send_sms(phone, sms)
+    sms_response = pindo.send_sms(phone, sms)
 
-    return {'Success':True,'sms':sms, 'phone':phone, 'file':file.filename}
+    return {'Success':True, 'sms':sms, 'phone':phone, 'file':file.filename}
 
 if __name__=='__main__':
     port = os.getenv('PORT',default=8000)

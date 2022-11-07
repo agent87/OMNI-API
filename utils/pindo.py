@@ -2,10 +2,10 @@ import requests
 
 
 
-async def send_sms(number, sms):
+def send_sms(number, sms):
     token='eyJhbGciOiJub25lIn0.eyJpZCI6Mjg0LCJyZXZva2VkX3Rva2VuX2NvdW50IjowfQ.'
     headers = {'Authorization': 'Bearer ' + token}
-    data = {'to' : number, 'text' : sms, 'sender' : 'OMNI-API'}
+    data = {'to' : number, 'text' : sms, 'sender' : 'OMNI'}
 
     url = 'https://api.pindo.io/v1/sms/'
-    response = await requests.post(url, json=data, headers=headers)
+    response = requests.post(url, json=data, headers=headers)
