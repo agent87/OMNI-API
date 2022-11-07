@@ -53,5 +53,5 @@ async def postAudio(file:UploadFile=File(...)):
 
 if __name__=='__main__':
     port = os.getenv('PORT',default=8000)
-    app_str = 'app:app'
+    app_str = 'omni:app'
     uvicorn.run(app_str, host='0.0.0.0', port=int(port) or 8000, reload=True)
