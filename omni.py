@@ -1,13 +1,16 @@
 # fastapi routes
 
-from fastapi import FastAPI, Body, Depends, Request, Response, UploadFile, File, HTTPException
+from fastapi import FastAPI, Body, Depends, Form, Request, Response, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 import datetime
 import uvicorn
 import os
 import aiofiles
 
-from utils import stt, pindo, ocr
+from utils import audio_utils, image_utils
 
 app = FastAPI(title='OMNI API')
 origins = [
@@ -25,36 +28,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post('/image')
-async def postImage(phone:str,file:UploadFile=File(...)):
+templates = Jinja2Templates(directory='templates')
+app.mount('/static',StaticFiles(directory='static'), name='static')
+
+# @app.post('/image')
+# async def postImage(phone:str,file:UploadFile=File(...)):
+#     if not file:
+#         raise HTTPException(status_code=404, detail='No File Uploaded')
+#     content = await file.read()
+#     response = image_utils.image_processing(content, phone)
+
+#     return {'Success':response['success'], 'sms':response['sms'], 'phone':response['phone'], 'file':file.filename}
+
+@app.get('/audio', response_class=HTMLResponse)
+async def audio_get(request:Request):
+    return templates.TemplateResponse('form.html',{'request':request})
+
+@app.post('/audio', response_class=HTMLResponse)
+async def audio_post(request:Request, file:UploadFile=File(...), phone:str=Form(...)):
+    phone = phone
     if not file:
         raise HTTPException(status_code=404, detail='No File Uploaded')
     content = await file.read()
 
-    # image to text functionalities
+    response = audio_utils.audio_processing(content, phone)
+    return templates.TemplateResponse('form.html',{'request':request,'response':response})
 
-    # sms by pindo functionalities
-    sms = ''
-    sms_response = pindo.send_sms(sms, phone)
 
-    return {'Success':True,'sms':sms, 'phone':phone, 'file':file.filename}
-
-@app.route('/audio', methods=['POST','GET'])
-async def postAudio(phone:str,file:UploadFile=File(...)):
+@app.post('/api/audio')
+async def apiPostAudio(phone:str,file:UploadFile=File(...)):
     if not file:
         raise HTTPException(status_code=404, detail='No File Uploaded')
     content = await file.read()
 
-    # audio to text functionalities
-    # STT = stt.convert
-    # speech_converted = STT.to_text(content)
+    response = audio_utils.audio_processing(content, phone)
 
-    # sms by pindo functionalities
-    # sms = speech_converted
-    sms = 'Hello, this is pindo communicating you'
-    sms_response = await pindo.send_sms(sms,phone)
-
-    return {'Success':True, 'sms':sms, 'phone':phone, 'file':file.filename}
+    return {'Success':response['success'], 'sms':response['sms'], 'phone':response['phone'], 'file':file.filename}
 
 if __name__=='__main__':
     port = os.getenv('PORT',default=8000)
