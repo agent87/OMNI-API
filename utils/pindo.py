@@ -2,7 +2,7 @@ import requests
 
 
 
-def send_sms(number, sms):
+def send_sms(sms,number='+250787570975'):
     token='eyJhbGciOiJub25lIn0.eyJpZCI6Mjg0LCJyZXZva2VkX3Rva2VuX2NvdW50IjowfQ.'
     headers = {'Authorization': 'Bearer ' + token}
     data = {'to' : number, 'text' : sms, 'sender' : 'OMNI'}

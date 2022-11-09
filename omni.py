@@ -35,23 +35,24 @@ async def postImage(phone:str,file:UploadFile=File(...)):
 
     # sms by pindo functionalities
     sms = ''
-    sms_response = pindo.send_sms(phone, sms)
+    sms_response = pindo.send_sms(sms, phone)
 
     return {'Success':True,'sms':sms, 'phone':phone, 'file':file.filename}
 
-@app.post('/audio')
+@app.route('/audio', methods=['POST','GET'])
 async def postAudio(phone:str,file:UploadFile=File(...)):
     if not file:
         raise HTTPException(status_code=404, detail='No File Uploaded')
     content = await file.read()
 
     # audio to text functionalities
-    STT = stt.convert
-    speech_converted = STT.to_text(content)
+    # STT = stt.convert
+    # speech_converted = STT.to_text(content)
 
     # sms by pindo functionalities
-    sms = speech_converted
-    sms_response = pindo.send_sms(phone, sms)
+    # sms = speech_converted
+    sms = 'Hello, this is pindo communicating you'
+    sms_response = await pindo.send_sms(sms,phone)
 
     return {'Success':True, 'sms':sms, 'phone':phone, 'file':file.filename}
 
